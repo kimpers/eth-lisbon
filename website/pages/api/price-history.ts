@@ -2,7 +2,10 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { YAM_PUNK_PRICE_URL } from '../../utils/config';
 
 // Get price history of punk floor
-const handlePriceHistory = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlePriceHistory = async (
+  _req: NextApiRequest,
+  res: NextApiResponse,
+) => {
   try {
     const priceRes = await fetch(YAM_PUNK_PRICE_URL);
     const resJson = await priceRes.json();
