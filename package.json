@@ -1,0 +1,19 @@
+{
+  "name": "sPUNK-monorepo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:kimpers/eth-lisbon.git",
+  "author": "Kim Persson <kimpersson88@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "pre-push-website": "(cd website && yarn typecheck && yarn lint && yarn lint:prettier && yarn test)"
+  },
+  "devDependencies": {
+    "husky": "^4.2.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn pre-push-website"
+    }
+  }
+}
