@@ -6,14 +6,15 @@
   "author": "Kim Persson <kimpersson88@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "pre-push-website": "(cd website && yarn typecheck && yarn lint && yarn lint:prettier && yarn test)"
+    "pre-push-website": "(cd website && yarn install && yarn typecheck && yarn lint && yarn lint:prettier && yarn test)",
+    "pre-push-contracts": "(cd contracts && yarn install && yarn hardhat compile && yarn hardhat test)"
   },
   "devDependencies": {
     "husky": "^4.2.5"
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn pre-push-website"
+      "pre-push": "yarn pre-push-website && yarn pre-push-contracts"
     }
   }
 }
