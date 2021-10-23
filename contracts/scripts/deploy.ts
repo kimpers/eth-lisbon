@@ -3,23 +3,28 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-import { ethers } from "hardhat";
+import hre from "hardhat";
+
+// CONFIG
+const longTokenAddress = "0xaf08f22fb42ef4b4fa54b5471806124c08bd2dfe";
+const shortTokenAddress = "0x6e2c300f8ae1b2d54006ae744f8b19d04df2f023";
+const longShortPairContractAddress =
+  "0x94c32d1a283cbb0772209e545f5332bbb81c4289";
+// DAI
+const collateralTokenAddress = "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063";
 
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+  const SPunkWrapper = await hre.ethers.getContractFactory("SPunkWrapper");
+  const wrapper = await SPunkWrapper.deploy(
+    longShortPairContractAddress,
+    collateralTokenAddress,
+    longTokenAddress,
+    shortTokenAddress
+  );
 
-  // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  await wrapper.deployed();
 
-  await greeter.deployed();
-
-  console.log("Greeter deployed to:", greeter.address);
+  console.log("Wrapper deployed to:", wrapper.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

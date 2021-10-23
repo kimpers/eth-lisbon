@@ -9,7 +9,7 @@ import "solidity-coverage";
 
 dotenv.config();
 
-const ETH_RPC_HTTP_URL = process.env.ETH_RPC_HTTP_URL;
+const { ETH_RPC_HTTP_URL, POLYGON_PRIVATE_KEY } = process.env;
 
 if (!ETH_RPC_HTTP_URL) {
   throw new Error('Missing ENV var "ETH_RPC_HTTP_URL"');
@@ -31,10 +31,15 @@ task("accounts", "Prints the list of accounts", async (_taskArgs, hre: any) => {
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
-    ropsten: {
-      url: process.env.ROPSTEN_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    hardhat: {
+      forking: {
+        url: ETH_RPC_HTTP_URL,
+        blockNumber: 20533178,
+      },
+    },
+    polygon: {
+      url: ETH_RPC_HTTP_URL,
+      accounts: POLYGON_PRIVATE_KEY ? [POLYGON_PRIVATE_KEY] : [],
     },
   },
   gasReporter: {
