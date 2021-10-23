@@ -17,11 +17,12 @@ interface IWrappedNativeToken {
 }
 
 interface IERC20 {
-    function approve(address guy, uint wad) external returns (bool);
-    function transfer(address dst, uint wad) external returns (bool);
-    function transferFrom(address src, address dst, uint wad) external returns (bool);
-    function allowance(address guy) external returns (uint);
-    function balanceOf(address guy) external returns (uint);
+    function totalSupply() external view returns (uint256);
+    function balanceOf(address account) external view returns (uint256);
+    function allowance(address owner, address spender) external view returns (uint256);
+    function transfer(address recipient, uint256 amount) external returns (bool);
+    function approve(address spender, uint256 amount) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 }
 
 interface IBalancerV2Vault {
@@ -98,7 +99,7 @@ contract SPunkWrapper {
     )
         private
     {
-        if (token.allowance(spender) < amount) {
+        if (token.allowance(address(this), spender) < amount) {
             token.approve(spender, MAX_AMOUNT - 1);
         }
     }
@@ -109,10 +110,9 @@ contract SPunkWrapper {
     {
         require(amount > 0, "SPUNK/VALUE_GREATER_THAN_ZERO");
         address sender = msg.sender;
-
         require(collateralToken.transferFrom(sender, address(this), amount), "SPUNK/TRANSFER_FROM_SENDER");
 
-        // NOTE: for MVP we do 1:1 ratio between amount of MATIC and long/short tokens
+        // NOTE: for MVP we do 1:1 ratio between amount of DAI and long/short tokens
         _approveIfBelow(collateralToken, address(longShortPairContract), amount);
         longShortPairContract.create(amount);
 
@@ -151,6 +151,6 @@ contract SPunkWrapper {
         );
 
         require(boughtAmount > 0, "SPUNK/BOUGHT_MORE_THAN_ZERO");
-        require(assetOut.transferFrom(address(this), sender, boughtAmount), "SPUNK/TRANSFER_BOUGHT_AMT");
+        require(assetOut.transfer(sender, assetOut.balanceOf(address(this))), "SPUNK/TRANSFER_BOUGHT_AMT");
     }
 }

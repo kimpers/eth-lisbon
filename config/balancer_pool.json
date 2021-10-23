@@ -1,31 +1,22 @@
-// Deploy with https://github.com/balancer-labs/balpy
 {
-  "network": "polygon",
-  // Add real name here
-  "name": "sPUNK Matic Pool",
-  "symbol": "sPUNKP",
-  "poolType": "WeightedPool",
-  "swapFeePercent": 1.0,
-  "fromInternalBalance": false,
-  "owner": "0x0000000000000000000000000000000000000000",
-  "tokens": {
-    // TODO: WMATIC
-    "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270": {
-      "weight": "0.333333333333333333",
-      "initialBalance": 100,
-      "allowance": -1
+    "network": "polygon",
+    "name": "sPUNK 2022 Pool",
+    "symbol": "sPUNKP1",
+    "poolType": "WeightedPool",
+    "swapFeePercent": 1.0,
+    "fromInternalBalance": false,
+    "owner": "0x0000000000000000000000000000000000000000",
+    "tokens": {
+        "0xaf08f22fb42ef4b4fa54b5471806124c08bd2dfe": {
+            "weight": "0.5",
+            "initialBalance": 10,
+            "allowance": -1
+        },
+        "0x6e2c300f8ae1b2d54006ae744f8b19d04df2f023": {
+            "weight": "0.5",
+            "initialBalance": 10,
+            "allowance": -1
+        }
     },
-    // TODO: sPUNK short
-    "0x22ee6c3B011fACC530dd01fe94C58919344d6Db5": {
-      "weight": "0.333333333333333333",
-      "initialBalance": 10000,
-      "allowance": -1
-    },
-    // TODO: sPUNK long
-    "0xdFCeA9088c8A88A76FF74892C1457C17dfeef9C1": {
-      "weight": "0.333333333333333334",
-      "initialBalance": 10000,
-      "allowance": -1
-    }
-  }
+    "poolId": "7819f1532c49388106f7762328c51ee70edd134c00020000000000000000006c"
 }
