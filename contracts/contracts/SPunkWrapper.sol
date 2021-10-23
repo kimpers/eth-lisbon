@@ -77,16 +77,16 @@ interface ILongShortPairContract {
 }
 
 contract SPunkWrapper {
-    IWrappedNativeToken private immutable wrappedNativeToken;
     ILongShortPairContract private immutable longShortPairContract;
     uint256 private constant MAX_AMOUNT = type(uint256).max;
 
     IERC20 public immutable longPunkToken;
     IERC20 public immutable shortPunkToken;
+    IERC20 private immutable collateralToken;
 
-    constructor(ILongShortPairContract _longShortPairContract, IWrappedNativeToken _wrappedNativeToken,IERC20 _longPunkToken, IERC20 _shortPunkToken) {
+    constructor(ILongShortPairContract _longShortPairContract, IERC20 _collateralToken, IERC20 _longPunkToken, IERC20 _shortPunkToken) {
         longShortPairContract = _longShortPairContract;
-        wrappedNativeToken = _wrappedNativeToken;
+        collateralToken = _collateralToken;
         longPunkToken = _longPunkToken;
         shortPunkToken = _shortPunkToken;
     }
@@ -103,20 +103,18 @@ contract SPunkWrapper {
         }
     }
 
-    function mintAndSell(Direction direction, IBalancerV2Vault vault, bytes32 poolId)
+    function mintAndSell(Direction direction, IBalancerV2Vault vault, bytes32 poolId, uint amount)
         public
         payable
     {
-        uint amount = msg.value;
-        address payable sender = payable(msg.sender);
-
         require(amount > 0, "SPUNK/VALUE_GREATER_THAN_ZERO");
-        wrappedNativeToken.deposit{value: amount}();
+        address sender = msg.sender;
+
+        require(collateralToken.transferFrom(sender, address(this), amount), "SPUNK/TRANSFER_FROM_SENDER");
 
         // NOTE: for MVP we do 1:1 ratio between amount of MATIC and long/short tokens
-        _approveIfBelow(IERC20(address(wrappedNativeToken)), address(longShortPairContract), amount);
+        _approveIfBelow(collateralToken, address(longShortPairContract), amount);
         longShortPairContract.create(amount);
-
 
         IERC20 assetIn;
         IERC20 assetOut;
