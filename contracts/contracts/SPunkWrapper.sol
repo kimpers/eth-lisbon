@@ -25,7 +25,6 @@ interface IERC20 {
 }
 
 interface IBalancerV2Vault {
-
     enum SwapKind { GIVEN_IN, GIVEN_OUT }
     /**
      * @dev Performs a swap with a single Pool.
@@ -65,15 +64,29 @@ interface IBalancerV2Vault {
     }
 }
 
+// See https://github.com/UMAprotocol/protocol/blob/master/packages/core/contracts/financial-templates/long-short-pair/LongShortPair.sol
+interface ILongShortPairContract {
+    /**
+     * @notice Creates a pair of long and short tokens equal in number to tokensToCreate. Pulls the required collateral
+     * amount into this contract, defined by the collateralPerPair value.
+     * @dev The caller must approve this contract to transfer `tokensToCreate * collateralPerPair` amount of collateral.
+     * @param tokensToCreate number of long and short synthetic tokens to create.
+     * @return collateralUsed total collateral used to mint the synthetics.
+     */
+    function create(uint256 tokensToCreate) external returns (uint256 collateralUsed);
+}
+
 contract SPunkWrapper {
     IWrappedNativeToken private immutable wrappedNativeToken;
+    ILongShortPairContract private immutable longShortPairContract;
     IERC20 public immutable longPunkToken;
     IERC20 public immutable shortPunkToken;
 
-    constructor(IWrappedNativeToken _wrappedNativeToken,IERC20 _longPunkToken, IERC20 _shortPunkToken) {
+    constructor(ILongShortPairContract _longShortPairContract, IWrappedNativeToken _wrappedNativeToken,IERC20 _longPunkToken, IERC20 _shortPunkToken) {
         wrappedNativeToken = _wrappedNativeToken;
         longPunkToken = _longPunkToken;
         shortPunkToken = _shortPunkToken;
+        longShortPairContract = _longShortPairContract;
     }
 
     function mintAndSell(Direction direction, IBalancerV2Vault vault, bytes32 poolId)
@@ -86,7 +99,10 @@ contract SPunkWrapper {
         require(amount > 0, "SPUNK//VALUE_GREATER_THAN_ZERO");
         wrappedNativeToken.deposit{value: amount}();
 
-        // TODO mint tokens
+        // TODO APPROVAL
+        // TODO different ratio than 1:1?
+        longShortPairContract.create(amount);
+
 
         IERC20 assetIn;
         IERC20 assetOut;
