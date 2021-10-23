@@ -79,14 +79,28 @@ interface ILongShortPairContract {
 contract SPunkWrapper {
     IWrappedNativeToken private immutable wrappedNativeToken;
     ILongShortPairContract private immutable longShortPairContract;
+    uint256 private constant MAX_AMOUNT = type(uint256).max;
+
     IERC20 public immutable longPunkToken;
     IERC20 public immutable shortPunkToken;
 
     constructor(ILongShortPairContract _longShortPairContract, IWrappedNativeToken _wrappedNativeToken,IERC20 _longPunkToken, IERC20 _shortPunkToken) {
+        longShortPairContract = _longShortPairContract;
         wrappedNativeToken = _wrappedNativeToken;
         longPunkToken = _longPunkToken;
         shortPunkToken = _shortPunkToken;
-        longShortPairContract = _longShortPairContract;
+    }
+
+    function _approveIfBelow(
+        IERC20 token,
+        address spender,
+        uint256 amount
+    )
+        private
+    {
+        if (token.allowance(spender) < amount) {
+            token.approve(spender, MAX_AMOUNT - 1);
+        }
     }
 
     function mintAndSell(Direction direction, IBalancerV2Vault vault, bytes32 poolId)
@@ -96,27 +110,25 @@ contract SPunkWrapper {
         uint amount = msg.value;
         address payable sender = payable(msg.sender);
 
-        require(amount > 0, "SPUNK//VALUE_GREATER_THAN_ZERO");
+        require(amount > 0, "SPUNK/VALUE_GREATER_THAN_ZERO");
         wrappedNativeToken.deposit{value: amount}();
 
-        // TODO APPROVAL
-        // TODO different ratio than 1:1?
+        // NOTE: for MVP we do 1:1 ratio between amount of MATIC and long/short tokens
+        _approveIfBelow(IERC20(address(wrappedNativeToken)), address(longShortPairContract), amount);
         longShortPairContract.create(amount);
 
 
         IERC20 assetIn;
         IERC20 assetOut;
         if (direction == Direction.Short) {
-            // TODO APPROVAL
             assetIn = longPunkToken;
             assetOut = shortPunkToken;
-
         } else {
-            // TODO APPROVAL
             assetIn = shortPunkToken;
             assetOut = longPunkToken;
         }
 
+        _approveIfBelow(assetIn, address(vault), amount);
         IBalancerV2Vault.SingleSwap memory request= IBalancerV2Vault.SingleSwap({
             poolId: poolId,
             kind: IBalancerV2Vault.SwapKind.GIVEN_IN,
@@ -140,8 +152,7 @@ contract SPunkWrapper {
             block.timestamp // expires after this block
         );
 
-        require(boughtAmount > 0, "SPUNK//BOUGHT_MORE_THAN_ZERO");
-        // TODO: should this be transferFrom??
-        require(assetOut.transfer(sender, boughtAmount), "SPUNK//TRANSFER_BOUGHT_AMT");
+        require(boughtAmount > 0, "SPUNK/BOUGHT_MORE_THAN_ZERO");
+        require(assetOut.transferFrom(address(this), sender, boughtAmount), "SPUNK/TRANSFER_BOUGHT_AMT");
     }
 }
