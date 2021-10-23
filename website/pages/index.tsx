@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import Decimal from 'decimal.js-light';
 import Link from 'next/link';
 import { NextPage } from 'next';
 import { useWeb3React } from '@web3-react/core';
@@ -9,10 +10,12 @@ import { PrimaryButton } from '../components/Buttons';
 import { routes } from '../utils/routes';
 import { disableEagerWalletConnectPreference } from '../utils/preferences';
 import { useClearWalletSession } from '../hooks/useClearWalletSession';
+import { useSPUNK, Direction } from '../hooks/useSPUNK';
 
 const HomePage: NextPage = () => {
-  const { account } = useWeb3React();
+  const { account, library } = useWeb3React();
   const { clearSession } = useClearWalletSession();
+  const spunk = useSPUNK(library, account);
 
   const handleDisconnectAccount = useCallback(() => {
     disableEagerWalletConnectPreference();
@@ -31,6 +34,23 @@ const HomePage: NextPage = () => {
             >
               Disconnect Wallet
             </PrimaryButton>
+            {spunk && (
+              <PrimaryButton
+                style={{ maxWidth: '300px', marginTop: '10px' }}
+                onClick={async () => {
+                  const result = await spunk.mintAndSell(
+                    Direction.Short,
+                    new Decimal(1e18),
+                  );
+
+                  if (result) {
+                    console.log(`TX SUCCESS ${result.hash}`);
+                  }
+                }}
+              >
+                SHORT 1 DAI
+              </PrimaryButton>
+            )}
           </>
         ) : (
           <Link passHref href={routes.LOGIN}>
