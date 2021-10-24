@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Direction } from './useSPUNK';
 
 import {
@@ -23,6 +23,31 @@ export const tokenAddresses = {
             symbol: 'sPUNKl',
         },
 };
+
+function useSPunkPrice(direction: number, amount: number) { //pass in direction value in long and short pages?
+    const [price, setPrice] = useState<any>();
+    
+    useEffect(() => {
+        (async () => {
+            try {
+                if (direction == 0) { //sell shortPunk tokens to the pool for long position
+                    const priceData = getPrice(tokenAddresses.sPUNKs, tokenAddresses.sPUNKl, amount, SwapTypes.SwapExactIn, true);
+                    setPrice(priceData);
+                    return price;
+                } else { //sell longPunks to the pool for short position
+                    const priceData = getPrice(tokenAddresses.sPUNKl, tokenAddresses.sPUNKs, amount, SwapTypes.SwapExactIn, true);
+                    setPrice(priceData);
+                    return price; 
+                }
+            } catch (err) {
+                console.error('Error fetching pool price:', err);
+            }
+        })();
+    }, []);
+
+    return useSPunkPrice;
+}
+
 
 async function getPrice(
     tokenIn: { symbol: string; address: string; decimals: number },
@@ -99,21 +124,4 @@ async function getPrice(
         return swapInfo;
 }
 
-export const sPunkPrice = useCallback(
-    async (direction: Direction, amount: BigNumberish) => {
-        try {
-            if (direction == 0) { //sell shortPunk tokens to the pool for long position
-                var price = getPrice(tokenAddresses.sPUNKs, tokenAddresses.sPUNKl, amount, SwapTypes.SwapExactIn, true);
-                return price;
-            } else { //sell longPunks to the pool for short position
-                var price = getPrice(tokenAddresses.sPUNKl, tokenAddresses.sPUNKs, amount, SwapTypes.SwapExactIn, true);
-                return price;
-            }
-        } catch (err) {
-            console.error('Error fetching pool price:', err);
-        }
-    },
-    [],
-);
-
-
+export { useSPunkPrice };
