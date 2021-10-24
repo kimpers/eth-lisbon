@@ -77,10 +77,29 @@ const lightTheme = {
   mediaQueries: generateMediaQueries(breakpoints),
 };
 
+const darkTheme = {
+  zIndices,
+  fontWeights,
+  breakpoints,
+  fontSizes: {
+    h1: fontSizes.xl,
+    paragraph: fontSizes.md,
+    navLink: fontSizes.md,
+  },
+  palette,
+  colors: {
+    backgroundColor: palette.black,
+    primaryText: palette.white,
+    secondaryText: lighten(opacities.secondaryText, palette.white),
+  },
+  mediaQueries: generateMediaQueries(breakpoints),
+};
+
 export type ITheme = typeof lightTheme;
 
 const themes = {
   light: lightTheme,
+  dark: darkTheme,
 };
 
 export { themes };

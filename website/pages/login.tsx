@@ -5,6 +5,7 @@ import { useWeb3React } from '@web3-react/core';
 import styled from 'styled-components';
 import { H5, P } from '../components/Typography';
 import { SecondaryButton } from '../components/Buttons';
+import { ThemeToggler } from '../components/ThemeToggler';
 import { ConnectWalletMenu } from '../components/ConnectWalletMenu';
 import { routes } from '../utils/routes';
 import { disableEagerWalletConnectPreference } from '../utils/preferences';
@@ -38,7 +39,7 @@ const Navbar = styled.div`
   padding: 5px 0px;
 `;
 
-const TextButton = styled.button`
+const LinkButton = styled.button`
   background: none;
   color: inherit;
   border: none;
@@ -73,27 +74,30 @@ const LoginPage = () => {
     <FullPageFlex>
       <Navbar>
         <Link passHref href={routes.HOME}>
-          <TextButton>
+          <LinkButton>
             <H5>Spunk</H5>
-          </TextButton>
+          </LinkButton>
         </Link>
-        {account ? (
-          <NavActionRow>
-            <P>{`${account.slice(0, 4)}...${account.slice(38)}`}</P>
-            <SecondaryButton
-              style={{ maxWidth: '300px' }}
-              onClick={handleDisconnectAccount}
-            >
-              Disconnect Wallet
-            </SecondaryButton>
-          </NavActionRow>
-        ) : (
-          <Link passHref href={routes.LOGIN}>
-            <SecondaryButton style={{ maxWidth: '300px' }}>
-              Connect Wallet
-            </SecondaryButton>
-          </Link>
-        )}
+        <NavActionRow>
+          {account ? (
+            <>
+              <P>{`${account.slice(0, 4)}...${account.slice(38)}`}</P>
+              <SecondaryButton
+                style={{ maxWidth: '300px' }}
+                onClick={handleDisconnectAccount}
+              >
+                Disconnect Wallet
+              </SecondaryButton>
+            </>
+          ) : (
+            <Link passHref href={routes.LOGIN}>
+              <SecondaryButton style={{ maxWidth: '300px' }}>
+                Connect Wallet
+              </SecondaryButton>
+            </Link>
+          )}
+          <ThemeToggler />
+        </NavActionRow>
       </Navbar>
       <ConnectWalletMenu onLogin={handleLogin} />
     </FullPageFlex>

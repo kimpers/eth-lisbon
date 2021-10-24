@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Decimal from 'decimal.js-light';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -53,17 +53,24 @@ const CheckoutInfoItem = styled.div`
 `;
 
 interface CheckoutProps {
-  ref: any;
   position: string;
 }
 
 const Checkout = (props: CheckoutProps) => {
-  const [amount, setAmount] = useState<string>('');
+  const [amount, setAmount] = useState<string>('0');
   const [succeeded, setSucceeded] = useState(false);
   const { account, library } = useWeb3React();
   const { allowance, approve } = useAllowance(library, account);
   const spunk = useSPUNK(library, account);
   const doesNeedApproval = allowance.lessThan(MAX_ALLOWANCE);
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  useEffect(() => {
+    if (inputRef?.current?.value) {
+      const inputAmount = inputRef?.current?.value;
+      setAmount(inputAmount);
+    }
+  }, [inputRef?.current?.value]);
 
   const onConfirm = async () => {
     if (!amount) {
@@ -94,7 +101,7 @@ const Checkout = (props: CheckoutProps) => {
             }}
           >
             <CheckoutForm
-              ref={props.ref}
+              ref={inputRef}
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -104,10 +111,10 @@ const Checkout = (props: CheckoutProps) => {
             </span>
           </div>
           <CheckoutInfoContainer>
-            <CheckoutInfoItem>
+            {/* <CheckoutInfoItem>
               <P>USD Value:</P>
               <P>$1000</P>
-            </CheckoutInfoItem>
+            </CheckoutInfoItem> */}
             {/* <CheckoutInfoItem>
                 <P>Gas fee</P>
                 <P>$0</P>
@@ -139,8 +146,7 @@ const Checkout = (props: CheckoutProps) => {
           <SuccessIcon />
           <P>
             You’re {props.position === 'long' ? 'LONG on' : 'SHORTING'} on
-            Cryptopunks for {props.ref?.current?.value} DAI. Congrats and let’s
-            go!
+            Cryptopunks for {amount} DAI. Congrats and let’s go!
           </P>
         </SuccessContainer>
       )}
