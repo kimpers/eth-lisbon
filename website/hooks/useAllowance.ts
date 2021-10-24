@@ -46,10 +46,12 @@ export const useAllowance = (
       }
 
       try {
-        await erc20.approve(
+        const tx = await erc20.approve(
           SPUNK_WRAPPER_ADDRESS,
           allowanceBaseUnits.toString(),
         );
+        const receipt = await tx.wait(1);
+        console.log(receipt.transactionHash);
         setAllowance(allowanceBaseUnits);
       } catch (err) {
         console.error(err);

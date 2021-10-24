@@ -10,7 +10,6 @@ import { SecondaryButton } from '../components/Buttons';
 import { routes } from '../utils/routes';
 import { disableEagerWalletConnectPreference } from '../utils/preferences';
 import { useClearWalletSession } from '../hooks/useClearWalletSession';
-// import { useSPUNK, Direction } from '../hooks/useSPUNK';
 import { useReferencePrices } from '../hooks/useReferencePrices';
 import { useImages } from '../hooks/useImages';
 
@@ -76,7 +75,6 @@ const HomePage: NextPage = () => {
     useReferencePrices();
   const [usdPrice, setUsdPrice] = useState<string>();
   const { imageUrls, imagesLoading } = useImages();
-  // const spunk = useSPUNK(library, account);
 
   const handleDisconnectAccount = useCallback(() => {
     disableEagerWalletConnectPreference();
@@ -118,24 +116,6 @@ const HomePage: NextPage = () => {
         </Navbar>
         <PriceWindow>
           <H5>Cryptopunks</H5>
-          {/* SAMPLE useSPUNK hook usage
-            {spunk && (
-            <PrimaryButton
-              style={{ maxWidth: '300px', marginTop: '10px' }}
-              onClick={async () => {
-                const result = await spunk.mintAndSell(
-                  Direction.Short,
-                  new Decimal(1e18),
-                );
-
-                if (result) {
-                  console.log(`TX SUCCESS ${result.hash}`);
-                }
-              }}
-            >
-              SHORT 1 DAI
-            </PrimaryButton>
-          )} */}
           {!pricesLoading ? (
             <H3>
               {latestPriceInEth && `${latestPriceInEth} ETH`}{' '}

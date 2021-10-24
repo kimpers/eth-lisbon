@@ -10,6 +10,7 @@ import { COLLATERAL_TOKEN_SYMBOL } from '../../utils/config';
 import { SuccessIcon } from '../../components/icons/SuccessIcon';
 import { routes } from '../../utils/routes';
 import { useAllowance } from '../../hooks/useAllowance';
+import { useSPUNK, Direction } from '../../hooks/useSPUNK';
 
 const MAX_ALLOWANCE = new Decimal(2).pow(256).minus(1);
 
@@ -57,16 +58,23 @@ interface CheckoutProps {
 }
 
 const Checkout = (props: CheckoutProps) => {
-  const [amount, setAmount] = useState<Decimal | undefined>();
+  const [amount, setAmount] = useState<string>('');
   const [succeeded, setSucceeded] = useState(false);
   const { account, library } = useWeb3React();
   const { allowance, approve } = useAllowance(library, account);
+  const spunk = useSPUNK(library, account);
   const doesNeedApproval = allowance.lessThan(MAX_ALLOWANCE);
-  console.log(allowance?.toString());
-  console.log(MAX_ALLOWANCE.toString());
 
-  // TODO: Integrate smart contract call
-  const onConfirm = () => {
+  const onConfirm = async () => {
+    if (!amount) {
+      return;
+    }
+    const direction =
+      props.position == 'long' ? Direction.Long : Direction.Short;
+    // TODO: don't hardcode this
+    const amountBaseUnits = new Decimal(amount).times(1e18);
+
+    await spunk.mintAndSell(direction, amountBaseUnits);
     setSucceeded(true);
   };
 
@@ -85,7 +93,12 @@ const Checkout = (props: CheckoutProps) => {
               alignItems: 'center',
             }}
           >
-            <CheckoutForm ref={props.ref} type="number" />
+            <CheckoutForm
+              ref={props.ref}
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
             <span style={{ marginLeft: '-50px', fontWeight: 700, zIndex: 999 }}>
               {COLLATERAL_TOKEN_SYMBOL}
             </span>
