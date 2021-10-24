@@ -1,4 +1,5 @@
-//mport { useEffect } from 'react';
+import { useCallback } from 'react';
+import { Direction } from './useSPUNK';
 
 import {
     BigNumber,
@@ -23,7 +24,7 @@ export const tokenAddresses = {
         },
 };
 
-async function getBalancerPoolPrice(
+async function getPrice(
     tokenIn: { symbol: string; address: string; decimals: number },
     tokenOut: { symbol: string; address: string; decimals: number },
     swapAmount: BigNumberish,
@@ -94,8 +95,25 @@ async function getBalancerPoolPrice(
         console.log(`Swaps:`);
         console.log(swapInfo.swaps);
         console.log(swapInfo.tokenAddresses);
-    
+
         return swapInfo;
 }
 
-export { getBalancerPoolPrice }
+export const sPunkPrice = useCallback(
+    async (direction: Direction, amount: BigNumberish) => {
+        try {
+            if (direction == 0) { //sell shortPunk tokens to the pool for long position
+                var price = getPrice(tokenAddresses.sPUNKs, tokenAddresses.sPUNKl, amount, SwapTypes.SwapExactIn, true);
+                return price;
+            } else { //sell longPunks to the pool for short position
+                var price = getPrice(tokenAddresses.sPUNKl, tokenAddresses.sPUNKs, amount, SwapTypes.SwapExactIn, true);
+                return price;
+            }
+        } catch (err) {
+            console.error('Error fetching pool price:', err);
+        }
+    },
+    [],
+);
+
+
