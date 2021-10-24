@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const H1 = styled.div<TextProps>`
-  font-family: 'Khula';
+  font-family: 'PT Mono';
   font-weight: ${({ fontWeight, theme }) => fontWeight ?? theme.fontWeights.h1};
   font-size: ${({ fontSize, theme }) => fontSize ?? theme.fontSizes.h1};
   font-style: normal;
@@ -12,7 +12,7 @@ const H1 = styled.div<TextProps>`
 `;
 
 const H2 = styled.h2`
-  font-family: 'Khula';
+  font-family: 'PT Mono';
   font-weight: bold;
   font-size: 36px;
   line-height: 100%;
@@ -21,7 +21,7 @@ const H2 = styled.h2`
 `;
 
 const H3 = styled.h3`
-  font-family: 'Khula';
+  font-family: 'PT Mono';
   font-weight: bold;
   font-size: 32px;
   line-height: 100%;
@@ -30,25 +30,27 @@ const H3 = styled.h3`
 `;
 
 const H4 = styled.h4`
-  font-family: 'Khula';
+  font-family: 'PT Mono';
   font-weight: ${(props) => props.theme.fontWeights.semiBold};
   font-size: 24px;
   line-height: 100%;
+
   color: ${(props) => props.theme.colors.primaryText};
 `;
 
 const H5 = styled.h5`
-  font-family: 'Khula';
+  font-family: 'PT Mono';
   font-weight: ${(props) => props.theme.fontWeights.semiBold};
   font-size: 16px;
   line-height: 19px;
   display: flex;
   align-items: center;
+  justify-content: center;
   color: #0e103c;
 `;
 
 const P = styled.p<TextProps>`
-  font-family: 'Khula';
+  font-family: 'PT Mono';
   font-weight: ${({ fontWeight, theme }) =>
     fontWeight ?? theme.fontWeights.medium};
   font-size: ${({ fontSize, theme }) => fontSize ?? theme.fontSizes.paragraph};
@@ -59,8 +61,20 @@ const P = styled.p<TextProps>`
   line-height: ${({ lineHeight }) => lineHeight};
 `;
 
+const PSecondary = styled.p<TextProps>`
+  font-family: 'PT Mono';
+  font-weight: ${({ fontWeight, theme }) =>
+    fontWeight ?? theme.fontWeights.medium};
+  font-size: ${({ fontSize, theme }) => fontSize ?? theme.fontSizes.paragraph};
+  font-style: normal;
+  /* -3.5% letter spacing */
+  letter-spacing: -0.035em;
+  color: ${({ color, theme }) => color ?? theme.colors.secondaryText};
+  line-height: ${({ lineHeight }) => lineHeight};
+`;
+
 const PBig = styled.p<TextProps>`
-  font-family: 'Khula';
+  font-family: 'PT Mono';
   text-align: center;
   font-feature-settings: 'tnum' on, 'lnum' on;
   font-weight: ${({ fontWeight, theme }) =>
@@ -80,7 +94,7 @@ const PLabel = styled.p<TextProps>`
   line-height: ${({ lineHeight }) => lineHeight ?? '14px'};
 `;
 
-export { H1, H2, H3, H4, H5, P, PBig, PLabel };
+export { H1, H2, H3, H4, H5, P, PSecondary, PBig, PLabel };
 
 interface TextProps {
   fontWeight?: number;

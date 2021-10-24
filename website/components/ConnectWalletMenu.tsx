@@ -33,11 +33,11 @@ import {
   InjectedProviders,
 } from '../utils/web3/helpers';
 
-import { MetaMaskIcon } from '../components/icons/MetaMask';
-import { ThickSpinnerIcon } from '../components/icons/Spinner';
-import { CoinbaseWalletIcon } from '../components/icons/CoinbaseWallet';
-import { WalletConnectIcon } from '../components/icons/WalletConnect';
-import { TrustWalletIcon } from '../components/icons/TrustWallet';
+import { MetaMaskIcon } from './icons/MetaMask';
+import { ThickSpinnerIcon } from './icons/Spinner';
+import { CoinbaseWalletIcon } from './icons/CoinbaseWallet';
+import { WalletConnectIcon } from './icons/WalletConnect';
+import { TrustWalletIcon } from './icons/TrustWallet';
 
 const StyledWalletButton = styled.button`
   background-color: ${(props) => props.theme.palette.white};

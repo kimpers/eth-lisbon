@@ -10,6 +10,8 @@ export const POLL_BLOCK_NUMBER_INTERVAL_MS = 60 * 1000;
 export const ALCHEMY_RPC_KEY_MAINNET =
   process.env.NEXT_PUBLIC_ALCHEMY_RPC_KEY_MAINNET;
 
+export const COLLATERAL_TOKEN_SYMBOL = 'DAI';
+
 export const YAM_PUNK_PRICE_URL =
   'https://api.yam.finance/degenerative/upunks/price-history';
 
