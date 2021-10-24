@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { H3, H4, H5, P, PSecondary } from '../components/Typography';
 import { PageContainer } from '../components/Layout';
-import { PrimaryButton, SecondaryButton } from '../components/Buttons';
+import { SecondaryButton } from '../components/Buttons';
 import { routes } from '../utils/routes';
 import { disableEagerWalletConnectPreference } from '../utils/preferences';
 import { useClearWalletSession } from '../hooks/useClearWalletSession';
@@ -70,9 +70,9 @@ const LinkButton = styled.button`
 `;
 
 const HomePage: NextPage = () => {
-  const { account, library } = useWeb3React();
+  const { account } = useWeb3React();
   const { clearSession } = useClearWalletSession();
-  const { latestPriceInEth, latestPriceInUsd, prices, pricesLoading } =
+  const { latestPriceInEth, latestPriceInUsd, pricesLoading } =
     useReferencePrices();
   const [usdPrice, setUsdPrice] = useState<string>();
   const { imageUrls, imagesLoading } = useImages();
