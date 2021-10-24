@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Decimal from 'decimal.js-light';
+import Link from 'next/link';
 import styled from 'styled-components';
+import { useWeb3React } from '@web3-react/core';
 import { H4, P } from '../../components/Typography';
 import { PrimaryButton } from '../../components/Buttons';
 import { FormInput } from '../../components/Input';
+import { ThickSpinnerIcon } from '../../components/icons/Spinner';
 import { COLLATERAL_TOKEN_SYMBOL } from '../../utils/config';
 import { SuccessIcon } from '../../components/icons/SuccessIcon';
-import {} from '../../hooks/useSPUNK';
+import { routes } from '../../utils/routes';
+import { useAllowance } from '../../hooks/useAllowance';
+import { useSPUNK, Direction } from '../../hooks/useSPUNK';
+
+const MAX_ALLOWANCE = new Decimal(2).pow(256).minus(1);
 
 const Container = styled.div`
   padding: 20px;
@@ -51,11 +59,43 @@ interface CheckoutProps {
 }
 
 const Checkout = (props: CheckoutProps) => {
+  const [isTxInProgress, setIsTxInProgress] = useState<boolean>(false);
+  const [amount, setAmount] = useState<string>('');
+  const [amountInBaseUnits, setAmountInBaseUnits] = useState<
+    Decimal | undefined
+  >(undefined);
   const [succeeded, setSucceeded] = useState(false);
+  const { account, library } = useWeb3React();
+  const { allowance, approve } = useAllowance(library, account);
+  const spunk = useSPUNK(library, account);
+  const doesNeedApproval =
+    amountInBaseUnits && allowance.lessThan(amountInBaseUnits);
 
-  // TODO: Integrate smart contract call
-  const onConfirm = () => {
-    setSucceeded(true);
+  useEffect(() => {
+    if (!amount) {
+      return;
+    }
+
+    // TODO: don't hardcode this
+    const _amountBaseUnits = new Decimal(amount).times(1e18);
+    setAmountInBaseUnits(_amountBaseUnits);
+  }, [amount, setAmountInBaseUnits]);
+
+  const onConfirm = async () => {
+    if (!amountInBaseUnits) {
+      return;
+    }
+    const direction =
+      props.position == 'long' ? Direction.Long : Direction.Short;
+
+    setIsTxInProgress(true);
+    try {
+      await spunk.mintAndSell(direction, amountInBaseUnits);
+      setSucceeded(true);
+    } catch (err) {
+      console.error(err);
+    }
+    setIsTxInProgress(false);
   };
 
   return (
@@ -73,7 +113,12 @@ const Checkout = (props: CheckoutProps) => {
               alignItems: 'center',
             }}
           >
-            <CheckoutForm ref={props.ref} type="number" />
+            <CheckoutForm
+              ref={props.ref}
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
             <span style={{ marginLeft: '-50px', fontWeight: 700, zIndex: 999 }}>
               {COLLATERAL_TOKEN_SYMBOL}
             </span>
@@ -89,10 +134,37 @@ const Checkout = (props: CheckoutProps) => {
               </CheckoutInfoItem> */}
             <CheckoutInfoItem>
               <P>Expiration</P>
-              <P>Nov 2022 (Punk anniversary) </P>
+              <P>June 2022 (Punk anniversary) </P>
             </CheckoutInfoItem>
             <div style={{ paddingBottom: '10px' }} />
-            <PrimaryButton onClick={onConfirm}>Confirm</PrimaryButton>
+            {!account && (
+              <Link passHref href={routes.LOGIN}>
+                <PrimaryButton style={{ maxWidth: '300px' }}>
+                  Connect Wallet
+                </PrimaryButton>
+              </Link>
+            )}
+            {account && doesNeedApproval && (
+              <PrimaryButton
+                disabled={isTxInProgress}
+                onClick={async () => {
+                  setIsTxInProgress(true);
+                  try {
+                    await approve(amountInBaseUnits ?? MAX_ALLOWANCE);
+                  } catch (err) {
+                    console.error(err);
+                  }
+                  setIsTxInProgress(false);
+                }}
+              >
+                {isTxInProgress ? <ThickSpinnerIcon /> : <span>Approve</span>}
+              </PrimaryButton>
+            )}
+            {account && !doesNeedApproval && (
+              <PrimaryButton disabled={isTxInProgress} onClick={onConfirm}>
+                {isTxInProgress ? <ThickSpinnerIcon /> : <span>Confirm</span>}
+              </PrimaryButton>
+            )}
           </CheckoutInfoContainer>
         </>
       ) : (

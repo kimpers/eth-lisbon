@@ -46,6 +46,8 @@ export const BALANCER_POOL_ID =
 export const SPUNK_WRAPPER_ADDRESS =
   '0xD98E5b1a0Aa8627625E89e12f158830BE25e1fbf';
 
+export const COLLATERAL_ADDRESS = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063';
+
 export const isProductionUrl = (): boolean => {
   const currentRootUrl = window.location.origin;
   const [isProductionUrl] = PRODUCTION_ROOT_URLS.map((url) =>

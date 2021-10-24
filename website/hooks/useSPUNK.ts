@@ -20,7 +20,7 @@ export const useSPUNK = (
   const mintAndSell = useCallback(
     async (direction: Direction, amount: Decimal) => {
       if (!account || !library) {
-        return;
+        throw new Error('No account connected');
       }
 
       const sPunkWrapper = SPunkWrapper__factory.connect(
@@ -28,12 +28,15 @@ export const useSPUNK = (
         getSigner(library, account) as any,
       );
 
-      return sPunkWrapper.mintAndSell(
+      const tx = await sPunkWrapper.mintAndSell(
         direction,
         BALANCER_VAULT_ADDRESS,
         BALANCER_POOL_ID,
         amount.toString(),
       );
+
+      const receipt = await tx.wait(1);
+      console.log(receipt.transactionHash);
     },
     [account, library],
   );
