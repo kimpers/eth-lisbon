@@ -8,7 +8,7 @@ const fontSizes = {
 
 const palette = {
   white: '#ffffff',
-  black: '#0E103C',
+  black: '#000000',
   darkYellow: '#7C560B',
   mutedYellow: '#FFF8EB',
   mutedOrange: '#FBEFE9',
@@ -56,7 +56,7 @@ const fontWeights = {
 };
 
 const opacities = {
-  secondaryText: 0.6,
+  secondaryText: 0.7,
 };
 
 const lightTheme = {

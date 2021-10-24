@@ -3,9 +3,6 @@ import punks from '../../utils/punks.json';
 
 // Get 2 random Punks' image URLs
 const handlePunks = async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log('req :', req);
-  console.log('res :', res);
-
   try {
     // Generate random index based on number of keys
     const punkObj: any = punks;
