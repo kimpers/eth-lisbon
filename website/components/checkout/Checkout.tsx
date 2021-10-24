@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
+import Decimal from 'decimal.js-light';
+import Link from 'next/link';
 import styled from 'styled-components';
+import { useWeb3React } from '@web3-react/core';
 import { H4, P } from '../../components/Typography';
 import { PrimaryButton } from '../../components/Buttons';
 import { FormInput } from '../../components/Input';
 import { COLLATERAL_TOKEN_SYMBOL } from '../../utils/config';
 import { SuccessIcon } from '../../components/icons/SuccessIcon';
-import {} from '../../hooks/useSPUNK';
+import { routes } from '../../utils/routes';
+import { useAllowance } from '../../hooks/useAllowance';
+
+const MAX_ALLOWANCE = new Decimal(2).pow(256).minus(1);
 
 const Container = styled.div`
   padding: 20px;
@@ -51,7 +57,13 @@ interface CheckoutProps {
 }
 
 const Checkout = (props: CheckoutProps) => {
+  const [amount, setAmount] = useState<Decimal | undefined>();
   const [succeeded, setSucceeded] = useState(false);
+  const { account, library } = useWeb3React();
+  const { allowance, approve } = useAllowance(library, account);
+  const doesNeedApproval = allowance.lessThan(MAX_ALLOWANCE);
+  console.log(allowance?.toString());
+  console.log(MAX_ALLOWANCE.toString());
 
   // TODO: Integrate smart contract call
   const onConfirm = () => {
@@ -89,10 +101,24 @@ const Checkout = (props: CheckoutProps) => {
               </CheckoutInfoItem> */}
             <CheckoutInfoItem>
               <P>Expiration</P>
-              <P>Nov 2022 (Punk anniversary) </P>
+              <P>June 2022 (Punk anniversary) </P>
             </CheckoutInfoItem>
             <div style={{ paddingBottom: '10px' }} />
-            <PrimaryButton onClick={onConfirm}>Confirm</PrimaryButton>
+            {!account && (
+              <Link passHref href={routes.LOGIN}>
+                <PrimaryButton style={{ maxWidth: '300px' }}>
+                  Connect Wallet
+                </PrimaryButton>
+              </Link>
+            )}
+            {account && doesNeedApproval && (
+              <PrimaryButton onClick={() => approve(MAX_ALLOWANCE)}>
+                Approve
+              </PrimaryButton>
+            )}
+            {account && !doesNeedApproval && (
+              <PrimaryButton onClick={onConfirm}>Confirm</PrimaryButton>
+            )}
           </CheckoutInfoContainer>
         </>
       ) : (
