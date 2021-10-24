@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Decimal from 'decimal.js-light';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -6,6 +6,7 @@ import { useWeb3React } from '@web3-react/core';
 import { H4, P } from '../../components/Typography';
 import { PrimaryButton } from '../../components/Buttons';
 import { FormInput } from '../../components/Input';
+import { ThickSpinnerIcon } from '../../components/icons/Spinner';
 import { COLLATERAL_TOKEN_SYMBOL } from '../../utils/config';
 import { SuccessIcon } from '../../components/icons/SuccessIcon';
 import { routes } from '../../utils/routes';
@@ -58,24 +59,43 @@ interface CheckoutProps {
 }
 
 const Checkout = (props: CheckoutProps) => {
+  const [isTxInProgress, setIsTxInProgress] = useState<boolean>(false);
   const [amount, setAmount] = useState<string>('');
+  const [amountInBaseUnits, setAmountInBaseUnits] = useState<
+    Decimal | undefined
+  >(undefined);
   const [succeeded, setSucceeded] = useState(false);
   const { account, library } = useWeb3React();
   const { allowance, approve } = useAllowance(library, account);
   const spunk = useSPUNK(library, account);
-  const doesNeedApproval = allowance.lessThan(MAX_ALLOWANCE);
+  const doesNeedApproval =
+    amountInBaseUnits && allowance.lessThan(amountInBaseUnits);
+
+  useEffect(() => {
+    if (!amount) {
+      return;
+    }
+
+    // TODO: don't hardcode this
+    const _amountBaseUnits = new Decimal(amount).times(1e18);
+    setAmountInBaseUnits(_amountBaseUnits);
+  }, [amount, setAmountInBaseUnits]);
 
   const onConfirm = async () => {
-    if (!amount) {
+    if (!amountInBaseUnits) {
       return;
     }
     const direction =
       props.position == 'long' ? Direction.Long : Direction.Short;
-    // TODO: don't hardcode this
-    const amountBaseUnits = new Decimal(amount).times(1e18);
 
-    await spunk.mintAndSell(direction, amountBaseUnits);
-    setSucceeded(true);
+    setIsTxInProgress(true);
+    try {
+      await spunk.mintAndSell(direction, amountInBaseUnits);
+      setSucceeded(true);
+    } catch (err) {
+      console.error(err);
+    }
+    setIsTxInProgress(false);
   };
 
   return (
@@ -125,12 +145,25 @@ const Checkout = (props: CheckoutProps) => {
               </Link>
             )}
             {account && doesNeedApproval && (
-              <PrimaryButton onClick={() => approve(MAX_ALLOWANCE)}>
-                Approve
+              <PrimaryButton
+                disabled={isTxInProgress}
+                onClick={async () => {
+                  setIsTxInProgress(true);
+                  try {
+                    await approve(amountInBaseUnits ?? MAX_ALLOWANCE);
+                  } catch (err) {
+                    console.error(err);
+                  }
+                  setIsTxInProgress(false);
+                }}
+              >
+                {isTxInProgress ? <ThickSpinnerIcon /> : <span>Approve</span>}
               </PrimaryButton>
             )}
             {account && !doesNeedApproval && (
-              <PrimaryButton onClick={onConfirm}>Confirm</PrimaryButton>
+              <PrimaryButton disabled={isTxInProgress} onClick={onConfirm}>
+                {isTxInProgress ? <ThickSpinnerIcon /> : <span>Confirm</span>}
+              </PrimaryButton>
             )}
           </CheckoutInfoContainer>
         </>
