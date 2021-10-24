@@ -58,7 +58,7 @@ interface CheckoutProps {
 }
 
 const Checkout = (props: CheckoutProps) => {
-  const [amount, setAmount] = useState<string>('0');
+  const [amount, setAmount] = useState<string>('');
   const [isTxInProgress, setIsTxInProgress] = useState<boolean>(false);
   const [amountInBaseUnits, setAmountInBaseUnits] = useState<
     Decimal | undefined
