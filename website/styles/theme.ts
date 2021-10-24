@@ -56,7 +56,7 @@ const fontWeights = {
 };
 
 const opacities = {
-  secondaryText: 0.7,
+  secondaryText: 0.45,
 };
 
 const lightTheme = {

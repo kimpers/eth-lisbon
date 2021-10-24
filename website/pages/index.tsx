@@ -136,13 +136,13 @@ const HomePage: NextPage = () => {
               SHORT 1 DAI
             </PrimaryButton>
           )} */}
-          {pricesLoading ? (
+          {!pricesLoading ? (
             <H3>
               {latestPriceInEth && `${latestPriceInEth} ETH`}{' '}
               {latestPriceInUsd && `($${usdPrice})`}
             </H3>
           ) : (
-            <H3>N/A</H3>
+            <H3>Loading</H3>
           )}
           <H3></H3>
         </PriceWindow>
@@ -162,11 +162,17 @@ const HomePage: NextPage = () => {
             </LinkButton>
           </Link>
           <ActionContainer>
-            {imagesLoading ? <div /> : <img src={imageUrls[1]} />}
-            <div style={{ padding: '15px' }}>
-              <H4 style={{ paddingBottom: '10px' }}>Short</H4>
-              <PSecondary>I think prices will go down</PSecondary>
-            </div>
+            <Link passHref href={routes.SHORT}>
+              <LinkButton>
+                <ActionContainer>
+                  {imagesLoading ? <div /> : <img src={imageUrls[1]} />}
+                  <div style={{ padding: '15px' }}>
+                    <H4 style={{ paddingBottom: '10px' }}>Short</H4>
+                    <PSecondary>I think prices will go down</PSecondary>
+                  </div>
+                </ActionContainer>
+              </LinkButton>
+            </Link>
           </ActionContainer>
         </ActionRow>
       </PageContainer>

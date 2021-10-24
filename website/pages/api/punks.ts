@@ -1,8 +1,8 @@
-import { NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
 import punks from '../../utils/punks.json';
 
 // Get 2 random Punks' image URLs
-const handlePunks = async (res: NextApiResponse) => {
+const handlePunks = async (_req: NextApiRequest, res: NextApiResponse) => {
   try {
     // Generate random index based on number of keys
     const punkObj: any = punks;

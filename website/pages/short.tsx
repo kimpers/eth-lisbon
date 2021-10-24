@@ -39,7 +39,8 @@ const PriceWindow = styled.div`
 const Body = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 40px;
 `;
 
 const TextButton = styled.button`
@@ -101,19 +102,19 @@ const ShortPage = () => {
         </Navbar>
         <PriceWindow>
           <H5>Cryptopunks</H5>
-          {pricesLoading ? (
+          {!pricesLoading ? (
             <H3>
               {latestPriceInEth && `${latestPriceInEth} ETH`}{' '}
               {latestPriceInUsd && `($${usdPrice})`}
             </H3>
           ) : (
-            <H3>N/A</H3>
+            <H3>Loading</H3>
           )}
           <H3></H3>
         </PriceWindow>
         <Body>
           {!imagesLoading && <img src={imageUrls[1]} />}
-          <Checkout ref={inputRef.current} />
+          <Checkout ref={inputRef.current} position="short" />
         </Body>
       </PageContainer>
     </>
