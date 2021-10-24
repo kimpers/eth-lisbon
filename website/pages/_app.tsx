@@ -8,7 +8,9 @@ import { Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 import { WalletConnectionProviderState } from '../contexts/wallet-connection';
 import { BlockWatcherProvider } from '../contexts/block-watcher';
+import { ToggleThemeContext } from '../contexts/toggle-theme';
 import { themes } from '../styles/theme';
+import { useDarkMode } from '../hooks/useDarkMode';
 import '../styles/resets.css';
 import '../styles/base.css';
 import 'react-medium-image-zoom/dist/styles.css';
@@ -25,11 +27,25 @@ const getLibrary = (provider: any) => {
 };
 
 const DappConfig: React.FC<{}> = ({ children }) => {
+  const { theme, toggleTheme } = useDarkMode();
   // Ensure decimal-js settings are correct on mount
   useEffect(() => {
     Decimal.set({ precision: 80, toExpPos: 1000 });
   }, []);
-  return <>{children}</>;
+  return (
+    <ThemeProvider theme={themes[theme]}>
+      <ToggleThemeContext.Provider value={{ toggleTheme, theme }}>
+        <style jsx global>
+          {`
+            body {
+              background: ${theme === 'dark' ? 'black' : 'white'};
+            }
+          `}
+        </style>
+        {children}
+      </ToggleThemeContext.Provider>
+    </ThemeProvider>
+  );
 };
 
 export default class Dapp extends App {
@@ -79,13 +95,11 @@ export default class Dapp extends App {
         />
         <DappConfig>
           <Web3ReactProvider getLibrary={getLibrary}>
-            <ThemeProvider theme={themes.light}>
-              <BlockWatcherProvider>
-                <WalletConnectionProviderState>
-                  <Component {...modifiedPageProps} />
-                </WalletConnectionProviderState>
-              </BlockWatcherProvider>
-            </ThemeProvider>
+            <BlockWatcherProvider>
+              <WalletConnectionProviderState>
+                <Component {...modifiedPageProps} />
+              </WalletConnectionProviderState>
+            </BlockWatcherProvider>
           </Web3ReactProvider>
         </DappConfig>
       </>

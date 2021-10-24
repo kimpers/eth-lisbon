@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Decimal from 'decimal.js-light';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -54,13 +54,12 @@ const CheckoutInfoItem = styled.div`
 `;
 
 interface CheckoutProps {
-  ref: any;
   position: string;
 }
 
 const Checkout = (props: CheckoutProps) => {
-  const [isTxInProgress, setIsTxInProgress] = useState<boolean>(false);
   const [amount, setAmount] = useState<string>('');
+  const [isTxInProgress, setIsTxInProgress] = useState<boolean>(false);
   const [amountInBaseUnits, setAmountInBaseUnits] = useState<
     Decimal | undefined
   >(undefined);
@@ -70,6 +69,14 @@ const Checkout = (props: CheckoutProps) => {
   const spunk = useSPUNK(library, account);
   const doesNeedApproval =
     amountInBaseUnits && allowance.lessThan(amountInBaseUnits);
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  useEffect(() => {
+    if (inputRef?.current?.value) {
+      const inputAmount = inputRef?.current?.value;
+      setAmount(inputAmount);
+    }
+  }, [inputRef?.current?.value]);
 
   useEffect(() => {
     if (!amount) {
@@ -114,7 +121,7 @@ const Checkout = (props: CheckoutProps) => {
             }}
           >
             <CheckoutForm
-              ref={props.ref}
+              ref={inputRef}
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -124,10 +131,10 @@ const Checkout = (props: CheckoutProps) => {
             </span>
           </div>
           <CheckoutInfoContainer>
-            <CheckoutInfoItem>
+            {/* <CheckoutInfoItem>
               <P>USD Value:</P>
               <P>$1000</P>
-            </CheckoutInfoItem>
+            </CheckoutInfoItem> */}
             {/* <CheckoutInfoItem>
                 <P>Gas fee</P>
                 <P>$0</P>
@@ -172,8 +179,7 @@ const Checkout = (props: CheckoutProps) => {
           <SuccessIcon />
           <P>
             You’re {props.position === 'long' ? 'LONG on' : 'SHORTING'} on
-            Cryptopunks for {props.ref?.current?.value} DAI. Congrats and let’s
-            go!
+            Cryptopunks for {amount} DAI. Congrats and let’s go!
           </P>
         </SuccessContainer>
       )}

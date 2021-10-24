@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useWeb3React } from '@web3-react/core';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import { H3, H5, P } from '../components/Typography';
 import { PageContainer } from '../components/Layout';
 import { SecondaryButton } from '../components/Buttons';
 import Checkout from '../components/checkout/Checkout';
+import { ThemeToggler } from '../components/ThemeToggler';
 import { routes } from '../utils/routes';
 import { disableEagerWalletConnectPreference } from '../utils/preferences';
 import { useClearWalletSession } from '../hooks/useClearWalletSession';
@@ -43,7 +44,7 @@ const Body = styled.div`
   gap: 40px;
 `;
 
-const TextButton = styled.button`
+const LinkButton = styled.button`
   background: none;
   color: inherit;
   border: none;
@@ -60,7 +61,6 @@ const ShortPage = () => {
     useReferencePrices();
   const [usdPrice, setUsdPrice] = useState<string>();
   const { imageUrls, imagesLoading } = useImages();
-  const inputRef = useRef<HTMLInputElement>();
 
   const handleDisconnectAccount = useCallback(() => {
     disableEagerWalletConnectPreference();
@@ -78,27 +78,30 @@ const ShortPage = () => {
       <PageContainer style={{ position: 'relative' }} id="top">
         <Navbar>
           <Link passHref href={routes.HOME}>
-            <TextButton>
+            <LinkButton>
               <H5>Spunk</H5>
-            </TextButton>
+            </LinkButton>
           </Link>
-          {account ? (
-            <NavActionRow>
-              <P>{`${account.slice(0, 4)}...${account.slice(38)}`}</P>
-              <SecondaryButton
-                style={{ maxWidth: '300px' }}
-                onClick={handleDisconnectAccount}
-              >
-                Disconnect Wallet
-              </SecondaryButton>
-            </NavActionRow>
-          ) : (
-            <Link passHref href={routes.LOGIN}>
-              <SecondaryButton style={{ maxWidth: '300px' }}>
-                Connect Wallet
-              </SecondaryButton>
-            </Link>
-          )}
+          <NavActionRow>
+            {account ? (
+              <>
+                <P>{`${account.slice(0, 4)}...${account.slice(38)}`}</P>
+                <SecondaryButton
+                  style={{ maxWidth: '300px' }}
+                  onClick={handleDisconnectAccount}
+                >
+                  Disconnect Wallet
+                </SecondaryButton>
+              </>
+            ) : (
+              <Link passHref href={routes.LOGIN}>
+                <SecondaryButton style={{ maxWidth: '300px' }}>
+                  Connect Wallet
+                </SecondaryButton>
+              </Link>
+            )}
+            <ThemeToggler />
+          </NavActionRow>
         </Navbar>
         <PriceWindow>
           <H5>Cryptopunks</H5>
@@ -114,7 +117,7 @@ const ShortPage = () => {
         </PriceWindow>
         <Body>
           {!imagesLoading && <img src={imageUrls[1]} />}
-          <Checkout ref={inputRef.current} position="short" />
+          <Checkout position="short" />
         </Body>
       </PageContainer>
     </>

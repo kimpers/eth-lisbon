@@ -19,7 +19,7 @@ const baseInputStyle = css<InputProps>`
       ? `0px 2px 2px 0px ${props.theme.colors.primaryText} 7% inset, 0px -1px 1px 0px ${props.theme.colors.primaryText} 20%`
       : `0px 2px 2px 0px ${props.theme.colors.primaryText} 7% inset, 0px -1px 1px 0px ${props.theme.colors.primaryText} 20%`};
   box-sizing: border-box;
-  color: ${(props) => props.theme.colors.primaryText};
+  color: black;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
   font-family: 'Gilroy', sans-serif;
   font-size: 24px;

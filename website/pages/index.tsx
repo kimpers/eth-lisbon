@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { H3, H4, H5, P, PSecondary } from '../components/Typography';
 import { PageContainer } from '../components/Layout';
 import { SecondaryButton } from '../components/Buttons';
+import { ThemeToggler } from '../components/ThemeToggler';
 import { routes } from '../utils/routes';
 import { disableEagerWalletConnectPreference } from '../utils/preferences';
 import { useClearWalletSession } from '../hooks/useClearWalletSession';
@@ -96,24 +97,28 @@ const HomePage: NextPage = () => {
               <H5>Spunk</H5>
             </LinkButton>
           </Link>
-          {account ? (
-            <NavActionRow>
-              <P>{`${account.slice(0, 4)}...${account.slice(38)}`}</P>
-              <SecondaryButton
-                style={{ maxWidth: '300px' }}
-                onClick={handleDisconnectAccount}
-              >
-                Disconnect Wallet
-              </SecondaryButton>
-            </NavActionRow>
-          ) : (
-            <Link passHref href={routes.LOGIN}>
-              <SecondaryButton style={{ maxWidth: '300px' }}>
-                Connect Wallet
-              </SecondaryButton>
-            </Link>
-          )}
+          <NavActionRow>
+            {account ? (
+              <>
+                <P>{`${account.slice(0, 4)}...${account.slice(38)}`}</P>
+                <SecondaryButton
+                  style={{ maxWidth: '300px' }}
+                  onClick={handleDisconnectAccount}
+                >
+                  Disconnect Wallet
+                </SecondaryButton>
+              </>
+            ) : (
+              <Link passHref href={routes.LOGIN}>
+                <SecondaryButton style={{ maxWidth: '300px' }}>
+                  Connect Wallet
+                </SecondaryButton>
+              </Link>
+            )}
+            <ThemeToggler />
+          </NavActionRow>
         </Navbar>
+
         <PriceWindow>
           <H5>Cryptopunks</H5>
           {!pricesLoading ? (

@@ -46,7 +46,7 @@ const H5 = styled.h5`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0e103c;
+  color: ${(props) => props.theme.colors.primaryText};
 `;
 
 const P = styled.p<TextProps>`
