@@ -19,8 +19,9 @@ const PrimaryButton = styled(BaseButton)`
     transform: scale(0.98);
   }
   :disabled {
-    box-shadow: inset 0px 4px 9px rgba(255, 255, 255, 0.25);
     cursor: not-allowed;
+    background: #fff;
+    border: 1px solid black;
   }
   :hover {
     background-color: ${(props) => props.theme.palette.purple};
