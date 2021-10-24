@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { P } from '../../components/Typography';
 import { PrimaryButton } from '../../components/Buttons';
-import { FormInput } from '../../components/Input'
+import { FormInput } from '../../components/Input';
 
 const Container = styled.div`
   padding: 20px;
@@ -15,14 +15,14 @@ const Container = styled.div`
 `;
 
 const CheckoutForm = styled(FormInput)`
-  ::-webkit-inner-spin-button{
-    -webkit-appearance: none; 
-    margin: 0; 
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
-  ::-webkit-outer-spin-button{
-    -webkit-appearance: none; 
-    margin: 0; 
-  }  
+  ::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 `;
 
 const CheckoutInfoContainer = styled.div`
@@ -36,19 +36,15 @@ const CheckoutInfoItem = styled.div`
   justify-content: space-between;
 `;
 
-
 interface CheckoutProps {
-  ref: any,
+  ref: any;
 }
 
 const Checkout = (props: CheckoutProps) => {
   return (
     <Container>
       <P>Enter amount</P>
-      <CheckoutForm 
-        ref={props.ref} 
-        type="number" 
-      />
+      <CheckoutForm ref={props.ref} type="number" />
       <CheckoutInfoContainer>
         <CheckoutInfoItem>
           <P>USD Value:</P>
@@ -62,12 +58,10 @@ const Checkout = (props: CheckoutProps) => {
           <P>Expiration</P>
           <P>Nov 2022</P>
         </CheckoutInfoItem>
-        <PrimaryButton>
-          Confirm
-        </PrimaryButton>
+        <PrimaryButton>Confirm</PrimaryButton>
       </CheckoutInfoContainer>
     </Container>
-  )
-}
+  );
+};
 
 export default Checkout;

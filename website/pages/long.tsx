@@ -55,7 +55,8 @@ const TextButton = styled.button`
 const LongPage = () => {
   const { account } = useWeb3React();
   const { clearSession } = useClearWalletSession();
-  const { latestPriceInEth, latestPriceInUsd, pricesLoading } = useReferencePrices();
+  const { latestPriceInEth, latestPriceInUsd, pricesLoading } =
+    useReferencePrices();
   const [usdPrice, setUsdPrice] = useState<string>();
   const { imageUrls, imagesLoading } = useImages();
   const inputRef = useRef<HTMLInputElement>();
@@ -100,21 +101,19 @@ const LongPage = () => {
         </Navbar>
         <PriceWindow>
           <H5>Cryptopunks</H5>
-          { pricesLoading
-            ?
-              <H3>{latestPriceInEth && `${latestPriceInEth} ETH`} {latestPriceInUsd && `($${usdPrice})`}</H3>
-            :
-              <H3>N/A</H3>
-          }
+          {pricesLoading ? (
+            <H3>
+              {latestPriceInEth && `${latestPriceInEth} ETH`}{' '}
+              {latestPriceInUsd && `($${usdPrice})`}
+            </H3>
+          ) : (
+            <H3>N/A</H3>
+          )}
           <H3></H3>
         </PriceWindow>
         <Body>
-          { !imagesLoading &&
-            <img src={imageUrls[1]} />
-          }
-          <Checkout 
-            ref={inputRef.current} 
-          />
+          {!imagesLoading && <img src={imageUrls[1]} />}
+          <Checkout ref={inputRef.current} />
         </Body>
       </PageContainer>
     </>

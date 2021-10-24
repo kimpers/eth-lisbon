@@ -34,7 +34,7 @@ const H4 = styled.h4`
   font-weight: ${(props) => props.theme.fontWeights.semiBold};
   font-size: 24px;
   line-height: 100%;
-  
+
   color: ${(props) => props.theme.colors.primaryText};
 `;
 

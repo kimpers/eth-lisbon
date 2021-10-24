@@ -9,7 +9,7 @@ function useImages() {
       const imageData = await res.json();
       const urls = [];
       for (let data of imageData) {
-          urls.push(data.image);
+        urls.push(data.image);
       }
       setImageUrls(urls);
       setLoading(false);
