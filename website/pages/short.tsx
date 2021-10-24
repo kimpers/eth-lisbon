@@ -1,16 +1,15 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { NextPage } from 'next';
 import { useWeb3React } from '@web3-react/core';
 import styled from 'styled-components';
 
-import { H3, H4, H5, P, PSecondary } from '../components/Typography';
+import { H3, H5, P } from '../components/Typography';
 import { PageContainer } from '../components/Layout';
 import { SecondaryButton } from '../components/Buttons';
+import Checkout from '../components/checkout/Checkout';
 import { routes } from '../utils/routes';
 import { disableEagerWalletConnectPreference } from '../utils/preferences';
 import { useClearWalletSession } from '../hooks/useClearWalletSession';
-// import { useSPUNK, Direction } from '../hooks/useSPUNK';
 import { useReferencePrices } from '../hooks/useReferencePrices';
 import { useImages } from '../hooks/useImages';
 
@@ -37,29 +36,14 @@ const PriceWindow = styled.div`
   gap: 10px;
 `;
 
-const ActionRow = styled.div`
+const Body = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
   gap: 40px;
-  padding: 20px;
 `;
 
-const ActionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  text-align: left !important;
-  gap: 5px;
-  box-shadow: 0px 1px 2px #0f0e39, inset 0px 4px 9px rgba(255, 255, 255, 0.25);
-
-  :hover {
-    opacity: 0.7;
-    cursor: pointer;
-  }
-`;
-
-const LinkButton = styled.button`
+const TextButton = styled.button`
   background: none;
   color: inherit;
   border: none;
@@ -69,14 +53,14 @@ const LinkButton = styled.button`
   outline: inherit;
 `;
 
-const HomePage: NextPage = () => {
+const ShortPage = () => {
   const { account } = useWeb3React();
   const { clearSession } = useClearWalletSession();
   const { latestPriceInEth, latestPriceInUsd, pricesLoading } =
     useReferencePrices();
   const [usdPrice, setUsdPrice] = useState<string>();
   const { imageUrls, imagesLoading } = useImages();
-  // const spunk = useSPUNK(library, account);
+  const inputRef = useRef<HTMLInputElement>();
 
   const handleDisconnectAccount = useCallback(() => {
     disableEagerWalletConnectPreference();
@@ -94,9 +78,9 @@ const HomePage: NextPage = () => {
       <PageContainer style={{ position: 'relative' }} id="top">
         <Navbar>
           <Link passHref href={routes.HOME}>
-            <LinkButton>
+            <TextButton>
               <H5>Spunk</H5>
-            </LinkButton>
+            </TextButton>
           </Link>
           {account ? (
             <NavActionRow>
@@ -118,24 +102,6 @@ const HomePage: NextPage = () => {
         </Navbar>
         <PriceWindow>
           <H5>Cryptopunks</H5>
-          {/* SAMPLE useSPUNK hook usage
-            {spunk && (
-            <PrimaryButton
-              style={{ maxWidth: '300px', marginTop: '10px' }}
-              onClick={async () => {
-                const result = await spunk.mintAndSell(
-                  Direction.Short,
-                  new Decimal(1e18),
-                );
-
-                if (result) {
-                  console.log(`TX SUCCESS ${result.hash}`);
-                }
-              }}
-            >
-              SHORT 1 DAI
-            </PrimaryButton>
-          )} */}
           {!pricesLoading ? (
             <H3>
               {latestPriceInEth && `${latestPriceInEth} ETH`}{' '}
@@ -146,39 +112,14 @@ const HomePage: NextPage = () => {
           )}
           <H3></H3>
         </PriceWindow>
-        <div style={{ padding: '20px', textAlign: 'center' }}>
-          <P>Choose your position</P>
-        </div>
-        <ActionRow>
-          <Link passHref href={routes.LONG}>
-            <LinkButton>
-              <ActionContainer>
-                {imagesLoading ? <div /> : <img src={imageUrls[0]} />}
-                <div style={{ padding: '15px' }}>
-                  <H4 style={{ paddingBottom: '10px' }}>Long</H4>
-                  <PSecondary>I think prices will go up</PSecondary>
-                </div>
-              </ActionContainer>
-            </LinkButton>
-          </Link>
-          <ActionContainer>
-            <Link passHref href={routes.SHORT}>
-              <LinkButton>
-                <ActionContainer>
-                  {imagesLoading ? <div /> : <img src={imageUrls[1]} />}
-                  <div style={{ padding: '15px' }}>
-                    <H4 style={{ paddingBottom: '10px' }}>Short</H4>
-                    <PSecondary>I think prices will go down</PSecondary>
-                  </div>
-                </ActionContainer>
-              </LinkButton>
-            </Link>
-          </ActionContainer>
-        </ActionRow>
+        <Body>
+          {!imagesLoading && <img src={imageUrls[1]} />}
+          <Checkout ref={inputRef.current} position="short" />
+        </Body>
       </PageContainer>
     </>
   );
 };
 
-const MemoizedHomePage = React.memo(HomePage);
-export default MemoizedHomePage;
+const MemoizedShortPage = React.memo(ShortPage);
+export default MemoizedShortPage;
