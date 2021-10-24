@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
+import Decimal from 'decimal.js-light';
+import Link from 'next/link';
 import styled from 'styled-components';
+import { useWeb3React } from '@web3-react/core';
 import { H4, P } from '../../components/Typography';
 import { PrimaryButton } from '../../components/Buttons';
 import { FormInput } from '../../components/Input';
 import { COLLATERAL_TOKEN_SYMBOL } from '../../utils/config';
 import { SuccessIcon } from '../../components/icons/SuccessIcon';
-import {} from '../../hooks/useSPUNK';
+import { routes } from '../../utils/routes';
+import { useAllowance } from '../../hooks/useAllowance';
+import { useSPUNK, Direction } from '../../hooks/useSPUNK';
+
+const MAX_ALLOWANCE = new Decimal(2).pow(256).minus(1);
 
 const Container = styled.div`
   padding: 20px;
@@ -51,10 +58,23 @@ interface CheckoutProps {
 }
 
 const Checkout = (props: CheckoutProps) => {
+  const [amount, setAmount] = useState<string>('');
   const [succeeded, setSucceeded] = useState(false);
+  const { account, library } = useWeb3React();
+  const { allowance, approve } = useAllowance(library, account);
+  const spunk = useSPUNK(library, account);
+  const doesNeedApproval = allowance.lessThan(MAX_ALLOWANCE);
 
-  // TODO: Integrate smart contract call
-  const onConfirm = () => {
+  const onConfirm = async () => {
+    if (!amount) {
+      return;
+    }
+    const direction =
+      props.position == 'long' ? Direction.Long : Direction.Short;
+    // TODO: don't hardcode this
+    const amountBaseUnits = new Decimal(amount).times(1e18);
+
+    await spunk.mintAndSell(direction, amountBaseUnits);
     setSucceeded(true);
   };
 
@@ -73,7 +93,12 @@ const Checkout = (props: CheckoutProps) => {
               alignItems: 'center',
             }}
           >
-            <CheckoutForm ref={props.ref} type="number" />
+            <CheckoutForm
+              ref={props.ref}
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
             <span style={{ marginLeft: '-50px', fontWeight: 700, zIndex: 999 }}>
               {COLLATERAL_TOKEN_SYMBOL}
             </span>
@@ -89,10 +114,24 @@ const Checkout = (props: CheckoutProps) => {
               </CheckoutInfoItem> */}
             <CheckoutInfoItem>
               <P>Expiration</P>
-              <P>Nov 2022 (Punk anniversary) </P>
+              <P>June 2022 (Punk anniversary) </P>
             </CheckoutInfoItem>
             <div style={{ paddingBottom: '10px' }} />
-            <PrimaryButton onClick={onConfirm}>Confirm</PrimaryButton>
+            {!account && (
+              <Link passHref href={routes.LOGIN}>
+                <PrimaryButton style={{ maxWidth: '300px' }}>
+                  Connect Wallet
+                </PrimaryButton>
+              </Link>
+            )}
+            {account && doesNeedApproval && (
+              <PrimaryButton onClick={() => approve(MAX_ALLOWANCE)}>
+                Approve
+              </PrimaryButton>
+            )}
+            {account && !doesNeedApproval && (
+              <PrimaryButton onClick={onConfirm}>Confirm</PrimaryButton>
+            )}
           </CheckoutInfoContainer>
         </>
       ) : (
