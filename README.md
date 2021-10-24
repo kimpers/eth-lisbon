@@ -1,6 +1,6 @@
 # sPUNK.finance
 
-sPunk.finance was built as a project for [EthLisbon 2021](https://www.ethlisbon.org/)
+[sPunk.finance](https://spunk.finance) was built as a project for [EthLisbon 2021](https://www.ethlisbon.org/)
 Easily get long or short exposure to the the CryptoPunks floor price on Polygon.
 
 The user deposits DAI and it will mint an [UMA Long Short Pair](https://docs.umaproject.org/synthetic-tokens/long-short-pair) binary option for the CryptoPunks floor price on the CryptoPunks contract deployment anniversary in June 2022.
