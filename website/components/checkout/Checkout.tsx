@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Decimal from 'decimal.js-light';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -59,22 +59,34 @@ interface CheckoutProps {
 
 const Checkout = (props: CheckoutProps) => {
   const [amount, setAmount] = useState<string>('');
+  const [amountInBaseUnits, setAmountInBaseUnits] = useState<
+    Decimal | undefined
+  >(undefined);
   const [succeeded, setSucceeded] = useState(false);
   const { account, library } = useWeb3React();
   const { allowance, approve } = useAllowance(library, account);
   const spunk = useSPUNK(library, account);
-  const doesNeedApproval = allowance.lessThan(MAX_ALLOWANCE);
+  const doesNeedApproval =
+    amountInBaseUnits && allowance.lessThan(amountInBaseUnits);
+
+  useEffect(() => {
+    if (!amount) {
+      return;
+    }
+
+    // TODO: don't hardcode this
+    const _amountBaseUnits = new Decimal(amount).times(1e18);
+    setAmountInBaseUnits(_amountBaseUnits);
+  }, [amount, setAmountInBaseUnits]);
 
   const onConfirm = async () => {
-    if (!amount) {
+    if (!amountInBaseUnits) {
       return;
     }
     const direction =
       props.position == 'long' ? Direction.Long : Direction.Short;
-    // TODO: don't hardcode this
-    const amountBaseUnits = new Decimal(amount).times(1e18);
 
-    await spunk.mintAndSell(direction, amountBaseUnits);
+    await spunk.mintAndSell(direction, amountInBaseUnits);
     setSucceeded(true);
   };
 
@@ -125,7 +137,9 @@ const Checkout = (props: CheckoutProps) => {
               </Link>
             )}
             {account && doesNeedApproval && (
-              <PrimaryButton onClick={() => approve(MAX_ALLOWANCE)}>
+              <PrimaryButton
+                onClick={() => approve(amountInBaseUnits ?? MAX_ALLOWANCE)}
+              >
                 Approve
               </PrimaryButton>
             )}
