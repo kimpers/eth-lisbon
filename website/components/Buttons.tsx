@@ -4,7 +4,7 @@ import { BaseButton } from './BaseButton';
 const PrimaryButton = styled(BaseButton)`
   width: 100%;
   height: 60px;
-  background: #000000;
+  background: ${(props) => props.theme.colors.primaryButtonColor};;
   outline: none;
   font-weight: bold;
   font-style: normal;

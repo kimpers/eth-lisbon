@@ -71,6 +71,7 @@ const lightTheme = {
   palette,
   colors: {
     backgroundColor: palette.white,
+    primaryButtonColor: palette.black,
     primaryText: palette.black,
     secondaryText: lighten(opacities.secondaryText, palette.black),
   },
@@ -89,6 +90,7 @@ const darkTheme = {
   palette,
   colors: {
     backgroundColor: palette.black,
+    primaryButtonColor: palette.purple,
     primaryText: palette.white,
     secondaryText: lighten(opacities.secondaryText, palette.white),
   },
